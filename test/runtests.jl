@@ -16,6 +16,14 @@ using Test
         @test_throws BoundsError advance!(scan, 1)
     end
 
+    @testset "scan!(Int64,)" begin
+        scanner = SimpleStringScanner(" 12 34")
+        @test scan!(scanner, r"\d+").match == "12"
+        @test !eos(scanner)
+        @test scan!(scanner, r"\d+").match == "34"
+        @test eos(scanner)
+    end
+
     @testset "parse(Int64,)" begin
         @test parse1(Int64, "1") == 1
         @test_throws ArgumentError parse1(Int64, "a")
@@ -71,6 +79,24 @@ using Test
         scan = SimpleStringScanner("1d-3")
         @test isapprox(tryparse1Float64(scan, 4), 1e-3)
         @test eos(scan)
+    end
+
+    @testset "tryparse1(Int64,)" begin
+        scanner = SimpleStringScanner(" 12 34")
+        @test !eos(scanner)
+        @test tryparse1(Int64, scanner, r"\d+") == 12
+        @test !eos(scanner)
+        @test tryparse1(Int64, scanner, r"\d+") == 34
+        @test eos(scanner)
+    end
+
+    @testset "tryparse1(Int64; base=2)" begin
+        scanner = SimpleStringScanner(" 10 11")
+        @test !eos(scanner)
+        @test tryparse1(Int64, scanner, r"\d+"; base=2) == 2
+        @test !eos(scanner)
+        @test tryparse1(Int64, scanner, r"\d+"; base=2) == 3
+        @test eos(scanner)
     end
 
 end
