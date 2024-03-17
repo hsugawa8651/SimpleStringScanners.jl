@@ -8,52 +8,53 @@ CurrentModule = SimpleStringScanners
 
 ```@docs
 SimpleStringScanners.SimpleStringScanner
-advance!
 eos
+advance!
+scan!
 ```
 
 ## parse
 
 ```@docs
 Base.parse
-parseBigFloat
-parseBigInt
 parseBool
-parseFloat16
-parseFloat32
-parseFloat64
 parseInt8
 parseInt16
 parseInt32
 parseInt64
 parseInt128
+parseBigInt
 parseUInt8
 parseUInt16
 parseUInt32
 parseUInt64
 parseUInt128
+parseFloat16
+parseFloat32
+parseFloat64
+parseBigFloat
 ```
 
 ## tryparse
 
 ```@docs
 Base.tryparse
-SimpleStringScanners.tryparseBigFloat
-SimpleStringScanners.tryparseBigInt
 SimpleStringScanners.tryparseBool
-SimpleStringScanners.tryparseFloat16
-SimpleStringScanners.tryparseFloat32
-SimpleStringScanners.tryparseFloat64
 SimpleStringScanners.tryparseInt8
 SimpleStringScanners.tryparseInt16
 SimpleStringScanners.tryparseInt32
 SimpleStringScanners.tryparseInt64
 SimpleStringScanners.tryparseInt128
+SimpleStringScanners.tryparseBigInt
 SimpleStringScanners.tryparseUInt8
 SimpleStringScanners.tryparseUInt16
 SimpleStringScanners.tryparseUInt32
 SimpleStringScanners.tryparseUInt64
 SimpleStringScanners.tryparseUInt128
+SimpleStringScanners.tryparseFloat16
+SimpleStringScanners.tryparseFloat32
+SimpleStringScanners.tryparseFloat64
+SimpleStringScanners.tryparseBigFloat
 ```
 
 
@@ -61,42 +62,42 @@ SimpleStringScanners.tryparseUInt128
 
 ```@docs
 SimpleStringScanners.parse1
-SimpleStringScanners.parse1BigFloat
-SimpleStringScanners.parse1BigInt
 SimpleStringScanners.parse1Bool
-SimpleStringScanners.parse1Float16
-SimpleStringScanners.parse1Float32
-SimpleStringScanners.parse1Float64
 SimpleStringScanners.parse1Int8
 SimpleStringScanners.parse1Int16
 SimpleStringScanners.parse1Int32
 SimpleStringScanners.parse1Int64
 SimpleStringScanners.parse1Int128
+SimpleStringScanners.parse1BigInt
 SimpleStringScanners.parse1UInt8
 SimpleStringScanners.parse1UInt16
 SimpleStringScanners.parse1UInt32
 SimpleStringScanners.parse1UInt64
 SimpleStringScanners.parse1UInt128
+SimpleStringScanners.parse1Float16
+SimpleStringScanners.parse1Float32
+SimpleStringScanners.parse1Float64
+SimpleStringScanners.parse1BigFloat
 ```
 
 ## tryparse1
 
 ```@docs
 SimpleStringScanners.tryparse1
-SimpleStringScanners.tryparse1BigFloat
-SimpleStringScanners.tryparse1BigInt
 SimpleStringScanners.tryparse1Bool
-SimpleStringScanners.tryparse1Float16
-SimpleStringScanners.tryparse1Float32
-SimpleStringScanners.tryparse1Float64
 SimpleStringScanners.tryparse1Int8
 SimpleStringScanners.tryparse1Int16
 SimpleStringScanners.tryparse1Int32
 SimpleStringScanners.tryparse1Int64
 SimpleStringScanners.tryparse1Int128
+SimpleStringScanners.tryparse1BigInt
 SimpleStringScanners.tryparse1UInt8
 SimpleStringScanners.tryparse1UInt16
 SimpleStringScanners.tryparse1UInt32
 SimpleStringScanners.tryparse1UInt64
 SimpleStringScanners.tryparse1UInt128
+SimpleStringScanners.tryparse1Float16
+SimpleStringScanners.tryparse1Float32
+SimpleStringScanners.tryparse1Float64
+SimpleStringScanners.tryparse1BigFloat
 ```

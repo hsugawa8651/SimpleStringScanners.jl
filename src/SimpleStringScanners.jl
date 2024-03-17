@@ -28,7 +28,7 @@ end
 @doc """
     advance!(scanner::SimpleStringScanner, width::Integer) -> SubString
 
-Advances the inner pointer of `scanner` by `width` nodeunits, and returns scanned substring.
+Advances the inner pointer of `scanner` by `width` codeunits, and returns scanned substring.
 """
 function advance!(scanner::SimpleStringScanner, width::Integer)
     @assert width > 0
@@ -40,7 +40,25 @@ function advance!(scanner::SimpleStringScanner, width::Integer)
     return SubString(scanner.text, start, stop - 1)
 end
 
-export SimpleStringScanner, advance!, eos
+@doc """
+    scan!(scanner::SimpleStringScanner, r::Regex, add_opts)
+
+Search for the first match of the regular expression `r` in `s` from the pointer `scan.start`, advances the pointer to the next code of the match, and returns a RegexMatch object containing the match.
+Returns `nothing` if the match failed.
+"""
+function scan!(scanner::SimpleStringScanner, r::Regex, add_opts::UInt32 = UInt32(0))
+    start = thisind(scanner.text, scanner.start)
+    m = match(r, scanner.text, start, add_opts)
+    isnothing(m) && (return m)
+    start = m.offset
+    for _ = 1:length(m.match)
+        start = nextind(scanner.text, start)
+    end
+    scanner.start = start
+    return m
+end
+
+export SimpleStringScanner, advance!, eos, scan!
 
 import Base: parse, tryparse
 
@@ -49,7 +67,7 @@ for func in (:parse, :tryparse)
     func1 = Symbol(String(func) * "1")
     @eval begin
         @doc """
-            $($func1)(type::Type, str::AbstractString; base)
+            $($func1)(type::Type, str::AbstractString; base...)
 
         Variant of `Base.$($func)` that can handle  Fortran's floating point numbers whose exponent part starts with `d` character.
         Substitutes `d` and `D` in `str` by `e`'s, and then invokes `Base.$($func)`.
@@ -66,25 +84,44 @@ end
 for func in (:parse, :tryparse, :parse1, :tryparse1)
     @eval begin
         @doc """
-            $($func)(type::Type, s::SimpleStringScanner, width::Integer; base)
+            $($func)(type::Type, s::SimpleStringScanner, width::Integer; base...)
 
-        Variant of `$($func)` for `SimpleStringScanner`
+        Equivalent to 
+        - `str = advance!(scanner, width); $($func)(type, str; base)`
         """
         $func(type::Type, scanner::SimpleStringScanner, width::Integer; base...) =
             @inline $func(type, advance!(scanner, width); base...)
+
+        @doc """
+            $($func)(type::Type, scanner::SimpleStringScanner, r::Regex, add_opts::UInt32=UInt32(0); base)
+
+        Equivalent to 
+        - `m = scan!(scanner, r, add_opts); $($func)(type, m.match; base)`
+        """
+        function $func(
+            type::Type,
+            scanner::SimpleStringScanner,
+            r::Regex,
+            add_opts::UInt32 = UInt32(0);
+            base...,
+        )
+            m = scan!(scanner, r, add_opts)
+            isnothing(m) && (return nothing)
+            return $func(type, m.match; base...)
+        end
     end
 end
 
 # `parseInt64` ...
 for func in (:parse, :tryparse, :parse1, :tryparse1)
     for t in (
+        Bool,
         Int8,
         Int16,
         Int32,
         Int64,
         Int128,
         BigInt,
-        Bool,
         UInt8,
         UInt16,
         UInt32,
@@ -99,25 +136,41 @@ for func in (:parse, :tryparse, :parse1, :tryparse1)
         @eval begin
             function $funcT end
             @doc """
-                $($funcT)(str::AbstractString; base)
+                $($funcT)(str::AbstractString; base...)
 
             Equivalent to 
-            - `$($func)($($t), str; base)`, and
+                - `$($func)($($t), str; base...)`
             """
             @inline $funcT(s::AbstractString; base...) = $func($t, s; base...)
 
             @doc """
-                $($funcT)(str::AbstractString; base)
+                $($funcT)(scanner::SimpleStringScanner, width::Integer; base...)
 
             Equivalent to 
-            - `$($func)($($t), scanner, width; base)`.
+            - `$($func)($($t), scanner, width; base...)`, i.e.,
+            - `str=advance!(scanner, width); $($func)($($t), str; base...)`.
             """
             @inline $funcT(s::SimpleStringScanner, w::Integer; base...) =
                 $func($t, s, w; base...)
+
+            @doc """
+                $($funcT)(scanner::SimpleStringScanner, r::Regex, add_opts; base...)
+
+            Equivalent to 
+            - `$($func)($($t), scanner, r, add_opts; base...)`, i.e.,
+            - `m=scan!(scanner, r, add_opts); $($func)($($t), m.match; base...)`.
+            """
+            @inline $funcT(
+                s::SimpleStringScanner,
+                r::Regex,
+                add_opts::UInt32 = UInt32(0);
+                base...,
+            ) = $func($t, s, r, add_opts; base...)
 
             export $funcT
         end
     end
 end
 
-end
+end # SimpleStringScanners
+
